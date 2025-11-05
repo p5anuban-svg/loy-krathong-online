@@ -20,6 +20,26 @@
     height: 100vh;
   }
 
+  @media (max-width: 768px) {
+    body {
+      flex-direction: column;
+    }
+    .sidebar {
+      width: 100%;
+      flex-direction: row;
+      justify-content: space-around;
+      padding: 10px;
+      height: auto;
+    }
+    .sidebar h1 {
+      display: none;
+    }
+    video {
+      width: 120px;
+      height: 90px;
+    }
+  }
+
   .sidebar {
     width: 240px;
     background: rgba(0,0,0,0.6);
@@ -58,6 +78,7 @@
     background: linear-gradient(180deg, #ffe98a, #ffc84d);
     color: #222;
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    transition: transform 0.1s ease;
   }
   button:hover {
     background: linear-gradient(180deg, #fff1a0, #ffd36e);
@@ -85,26 +106,6 @@
     0% { transform: translateY(0px); }
     50% { transform: translateY(-8px); }
     100% { transform: translateY(0px); }
-  }
-
-  .face {
-    position: absolute;
-    right: -40px;
-    top: 50px;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 3px solid #fff;
-    background: #002244;
-    box-shadow: 0 0 15px rgba(255,255,255,0.5);
-    z-index: 2;
-  }
-
-  .face img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
   }
 
   .base {
@@ -135,6 +136,7 @@
     <video id="video" autoplay playsinline></video>
     <button id="btnStart">เปิดกล้อง</button>
     <button id="btnCapture">ถ่ายภาพ</button>
+    <button id="btnLoab">โหมดลอบกระทง</button>
     <button id="btnClear">เคลียร์ทั้งหมด</button>
   </div>
 
@@ -146,6 +148,7 @@ const video = document.getElementById("video");
 const btnStart = document.getElementById("btnStart");
 const btnCapture = document.getElementById("btnCapture");
 const btnClear = document.getElementById("btnClear");
+const btnLoab = document.getElementById("btnLoab");
 const stage = document.getElementById("stage");
 const warning = document.getElementById("warning");
 let stream = null;
@@ -163,6 +166,7 @@ if (location.protocol !== "https:") {
   warning.style.display = "block";
 }
 
+// เปิด/ปิดกล้อง
 btnStart.onclick = async () => {
   if (stream) { stopCamera(); return; }
   try {
@@ -182,6 +186,7 @@ function stopCamera() {
   btnStart.textContent = "เปิดกล้อง";
 }
 
+// ถ่ายภาพ
 btnCapture.onclick = () => {
   if (!stream) return alert("กรุณาเปิดกล้องก่อน");
   const canvas = document.createElement("canvas");
@@ -196,7 +201,14 @@ btnCapture.onclick = () => {
   createKrathong(dataUrl);
 };
 
-function createKrathong(imgSrc) {
+// โหมดลอบกระทง (ไม่ใช้กล้อง)
+btnLoab.onclick = () => {
+  const baseSrc = krathongImages[Math.floor(Math.random() * krathongImages.length)];
+  createKrathong(null, baseSrc);
+};
+
+// ฟังก์ชันสร้างกระทง
+function createKrathong(imgSrc, baseOverride = null) {
   const k = document.createElement("div");
   k.className = "krathong";
 
@@ -205,14 +217,7 @@ function createKrathong(imgSrc) {
   k.style.left = left + "px";
   k.style.top = top + "px";
 
-  const baseSrc = krathongImages[Math.floor(Math.random() * krathongImages.length)];
-
-  const face = document.createElement("div");
-  face.className = "face";
-  const img = document.createElement("img");
-  img.src = imgSrc;
-  face.appendChild(img);
-  k.appendChild(face);
+  const baseSrc = baseOverride || krathongImages[Math.floor(Math.random() * krathongImages.length)];
 
   const base = document.createElement("img");
   base.src = baseSrc;
