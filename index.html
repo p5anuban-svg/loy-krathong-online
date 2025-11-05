@@ -14,85 +14,58 @@
     color: #fff;
   }
 
-  body {
-    display: flex;
-    flex-direction: row;
+  /* ฉากน้ำ */
+  .stage {
+    position: relative;
+    width: 100%;
     height: 100vh;
+    background: url("bg.jpg") center/cover no-repeat;
+    overflow: hidden;
   }
 
-  /* 📱 ปรับสำหรับมือถือ */
-  @media (max-width: 768px) {
-    body {
-      flex-direction: column;
-    }
-
-    .sidebar {
-      width: 100%;
-      flex-direction: row;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 10px;
-      height: auto;
-    }
-
-    .sidebar h1 {
-      width: 100%;
-      text-align: center;
-      margin-bottom: 5px;
-    }
-
-    video {
-      width: 140px;
-      height: 100px;
-    }
-
-    button {
-      width: 46%;
-      font-size: 0.85rem;
-      padding: 6px 4px;
-    }
-  }
-
+  /* แถบปุ่มแบบลอย */
   .sidebar {
-    width: 240px;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(6px);
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 15px 10px;
-    box-shadow: 3px 0 10px rgba(0,0,0,0.4);
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
     z-index: 10;
   }
 
   h1 {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    margin: 0 0 5px 0;
     text-align: center;
-    margin-bottom: 10px;
   }
 
   video {
-    width: 200px;
-    height: 150px;
+    width: 120px;
+    height: 90px;
     border-radius: 10px;
     background: #000;
     object-fit: cover;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
 
   button {
-    width: 90%;
-    margin: 5px 0;
-    padding: 8px 10px;
+    width: 130px;
+    padding: 6px 8px;
     border-radius: 8px;
     font-weight: bold;
+    font-size: 0.8rem;
     cursor: pointer;
     border: none;
     background: linear-gradient(180deg, #ffe98a, #ffc84d);
     color: #222;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    transition: transform 0.1s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
 
   button:hover {
@@ -100,40 +73,32 @@
     transform: scale(1.03);
   }
 
-  .stage {
-    flex: 1;
-    position: relative;
-    background-image: url("bg.jpg");
-    background-size: cover;
-    background-position: center;
-    overflow: hidden;
-  }
-
+  /* กระทง */
   .krathong {
     position: absolute;
-    width: 220px;
-    height: 180px;
+    width: 180px;
+    height: 140px;
     pointer-events: none;
     animation: floatY 5s ease-in-out infinite;
   }
 
   @keyframes floatY {
-    0% { transform: translateY(0px); }
+    0% { transform: translateY(0); }
     50% { transform: translateY(-8px); }
-    100% { transform: translateY(0px); }
+    100% { transform: translateY(0); }
   }
 
   .face {
     position: absolute;
-    right: -40px;
-    top: 50px;
-    width: 100px;
-    height: 100px;
+    right: -35px;
+    top: 30px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     overflow: hidden;
     border: 3px solid #fff;
     background: #002244;
-    box-shadow: 0 0 15px rgba(255,255,255,0.5);
+    box-shadow: 0 0 10px rgba(255,255,255,0.5);
     z-index: 2;
   }
 
@@ -146,8 +111,8 @@
   .base {
     position: absolute;
     bottom: 0;
-    width: 180px;
-    height: 180px;
+    width: 140px;
+    height: 140px;
     left: 0;
     z-index: 1;
   }
@@ -155,27 +120,27 @@
   .warning {
     position: fixed;
     bottom: 10px;
-    right: 10px;
+    left: 10px;
     background: rgba(255,80,80,0.9);
     color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
     display: none;
   }
 </style>
 </head>
 <body>
-  <div class="sidebar" id="sidebar">
-    <h1>ลอยกระทงออนไลน์</h1>
-    <video id="video" autoplay playsinline></video>
-    <button id="btnStart">เปิดกล้อง</button>
-    <button id="btnCapture">ถ่ายภาพ</button>
-    <button id="btnLoab">ลอยกระทงแบบไม่ใช้กล้อง</button>
-    <button id="btnClear">เคลียร์ทั้งหมด</button>
+  <div class="stage" id="stage">
+    <div class="sidebar">
+      <h1>ลอยกระทง</h1>
+      <video id="video" autoplay playsinline></video>
+      <button id="btnStart">เปิดกล้อง</button>
+      <button id="btnCapture">ถ่ายภาพ</button>
+      <button id="btnLoab">ลอยกระทงแบบไม่ใช้กล้อง</button>
+      <button id="btnClear">เคลียร์ทั้งหมด</button>
+    </div>
   </div>
-
-  <div class="stage" id="stage"></div>
   <div class="warning" id="warning">⚠️ กล้องทำงานได้เฉพาะเมื่อเปิดผ่าน HTTPS เท่านั้น</div>
 
 <script>
@@ -188,36 +153,18 @@ const stage = document.getElementById("stage");
 const warning = document.getElementById("warning");
 let stream = null;
 
-const krathongImages = [
-  "simple1.png",
-  "simple2.png",
-  "simple3.png",
-  "simple4.png",
-  "simple5.png"
-];
+const krathongImages = ["simple1.png","simple2.png","simple3.png","simple4.png","simple5.png"];
 
-// ตรวจสอบ HTTPS
-if (location.protocol !== "https:") {
-  warning.style.display = "block";
-}
+if (location.protocol !== "https:") warning.style.display = "block";
 
-// เปิด/ปิดกล้อง
 btnStart.onclick = async () => {
   if (stream) { stopCamera(); return; }
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    alert("อุปกรณ์นี้ไม่รองรับการเปิดกล้องผ่านเบราว์เซอร์");
-    return;
-  }
   try {
     stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
     video.srcObject = stream;
     btnStart.textContent = "ปิดกล้อง";
   } catch (e) {
-    if (location.protocol !== "https:") {
-      alert("⚠️ กรุณาเปิดผ่าน HTTPS หรือ Live Server");
-    } else {
-      alert("ไม่สามารถเปิดกล้องได้ กรุณาเช็กสิทธิ์ในเบราว์เซอร์");
-    }
+    alert("ไม่สามารถเปิดกล้องได้ ตรวจสอบสิทธิ์หรือเปิดผ่าน HTTPS");
     console.error(e);
   }
 };
@@ -231,12 +178,11 @@ function stopCamera() {
   btnStart.textContent = "เปิดกล้อง";
 }
 
-// ฟังก์ชันสร้างกระทง
 function createKrathong(imgSrc, baseOverride = null) {
   const k = document.createElement("div");
   k.className = "krathong";
 
-  const left = Math.random() * (stage.clientWidth - 250);
+  const left = Math.random() * (stage.clientWidth - 180);
   const top = Math.random() * (stage.clientHeight * 0.3) + stage.clientHeight * 0.6;
   k.style.left = left + "px";
   k.style.top = top + "px";
@@ -256,12 +202,11 @@ function createKrathong(imgSrc, baseOverride = null) {
   base.src = baseSrc;
   base.className = "base";
   k.appendChild(base);
-
   stage.appendChild(k);
 
   const duration = 60000;
   const startX = left;
-  const endX = stage.clientWidth - left - 200;
+  const endX = stage.clientWidth - left - 150;
   const direction = Math.random() > 0.5 ? 1 : -1;
   const startTime = Date.now();
 
@@ -279,7 +224,6 @@ function createKrathong(imgSrc, baseOverride = null) {
   requestAnimationFrame(animate);
 }
 
-// ถ่ายภาพ
 btnCapture.onclick = () => {
   if (!stream) return alert("กรุณาเปิดกล้องก่อน");
   const canvas = document.createElement("canvas");
@@ -295,13 +239,11 @@ btnCapture.onclick = () => {
   createKrathong(dataUrl);
 };
 
-// ลอยกระทงแบบไม่ใช้กล้อง
 btnLoab.onclick = () => {
   const baseSrc = krathongImages[Math.floor(Math.random() * krathongImages.length)];
   createKrathong(null, baseSrc);
 };
 
-// เคลียร์ทั้งหมด
 btnClear.onclick = () => stage.innerHTML = "";
 </script>
 </body>
