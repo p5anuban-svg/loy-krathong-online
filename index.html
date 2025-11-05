@@ -137,7 +137,7 @@
     <video id="video" autoplay playsinline></video>
     <button id="btnStart">เปิดกล้อง</button>
     <button id="btnCapture">ถ่ายภาพ</button>
-    <button id="btnLoab">ลอยกระทงไม่ใช้กล้อง</button>
+    <button id="btnLoab">ลอยกระทงแบบไม่ใช้กล้อง</button>
     <button id="btnClear">เคลียร์ทั้งหมด</button>
   </div>
 
@@ -172,60 +172,38 @@ if (location.protocol !== "https:") {
 btnStart.onclick = async () => {
   if (stream) { stopCamera(); return; }
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user' },
+      audio: false
+    });
     video.srcObject = stream;
     btnStart.textContent = "ปิดกล้อง";
   } catch (e) {
-    alert("ไม่สามารถเปิดกล้องได้");
+    alert("ไม่สามารถเปิดกล้องได้ — ตรวจสอบสิทธิ์การเข้าถึงกล้องหรือเปิดด้วย HTTPS");
     console.error(e);
   }
 };
 
 function stopCamera() {
-  stream.getTracks().forEach(t => t.stop());
-  stream = null;
-  video.srcObject = null;
+  if (stream) {
+    stream.getTracks().forEach(t => t.stop());
+    video.srcObject = null;
+    stream = null;
+  }
   btnStart.textContent = "เปิดกล้อง";
 }
 
 // ฟังก์ชันซ่อนปุ่ม
 function hideSidebarButtons() {
   sidebar.style.opacity = "0";
-  setTimeout(() => {
-    sidebar.style.display = "none";
-  }, 500);
+  setTimeout(() => sidebar.style.display = "none", 500);
 }
 
 // ฟังก์ชันแสดงปุ่ม (เมื่อเคลียร์)
 function showSidebarButtons() {
   sidebar.style.display = "flex";
-  setTimeout(() => {
-    sidebar.style.opacity = "1";
-  }, 10);
+  setTimeout(() => sidebar.style.opacity = "1", 10);
 }
-
-// ถ่ายภาพ
-btnCapture.onclick = () => {
-  if (!stream) return alert("กรุณาเปิดกล้องก่อน");
-  const canvas = document.createElement("canvas");
-  const w = video.videoWidth;
-  const h = video.videoHeight;
-  canvas.width = w; canvas.height = h;
-  const ctx = canvas.getContext("2d");
-  ctx.translate(w, 0);
-  ctx.scale(-1, 1);
-  ctx.drawImage(video, 0, 0, w, h);
-  const dataUrl = canvas.toDataURL("image/jpeg");
-  createKrathong(dataUrl);
-  hideSidebarButtons();
-};
-
-// ลอยกระทง (ไม่ใช้กล้อง)
-btnLoab.onclick = () => {
-  const baseSrc = krathongImages[Math.floor(Math.random() * krathongImages.length)];
-  createKrathong(null, baseSrc);
-  hideSidebarButtons();
-};
 
 // ฟังก์ชันสร้างกระทง
 function createKrathong(imgSrc, baseOverride = null) {
@@ -238,7 +216,6 @@ function createKrathong(imgSrc, baseOverride = null) {
   k.style.top = top + "px";
 
   const baseSrc = baseOverride || krathongImages[Math.floor(Math.random() * krathongImages.length)];
-
   const base = document.createElement("img");
   base.src = baseSrc;
   base.className = "base";
@@ -263,10 +240,42 @@ function createKrathong(imgSrc, baseOverride = null) {
       setTimeout(() => k.remove(), 2000);
     }
   }
-  animate();
+  requestAnimationFrame(animate);
 }
 
-// เคลียร์กระทงและคืนปุ่ม
+// ถ่ายภาพ
+btnCapture.onclick = () => {
+  if (!stream) {
+    alert("กรุณาเปิดกล้องก่อน");
+    return;
+  }
+  try {
+    const canvas = document.createElement("canvas");
+    const w = video.videoWidth || 640;
+    const h = video.videoHeight || 480;
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    ctx.translate(w, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, w, h);
+    const dataUrl = canvas.toDataURL("image/jpeg");
+    createKrathong(dataUrl);
+    hideSidebarButtons();
+  } catch (err) {
+    alert("เกิดข้อผิดพลาดในการถ่ายภาพ");
+    console.error(err);
+  }
+};
+
+// ลอยกระทงแบบไม่ใช้กล้อง
+btnLoab.onclick = () => {
+  const baseSrc = krathongImages[Math.floor(Math.random() * krathongImages.length)];
+  createKrathong(null, baseSrc);
+  hideSidebarButtons();
+};
+
+// เคลียร์ทั้งหมด
 btnClear.onclick = () => {
   stage.innerHTML = "";
   showSidebarButtons();
