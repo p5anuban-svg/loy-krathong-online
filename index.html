@@ -14,7 +14,6 @@
     color: #fff;
   }
 
-  /* ฉากน้ำ */
   .stage {
     position: relative;
     width: 100%;
@@ -23,7 +22,7 @@
     overflow: hidden;
   }
 
-  /* แถบปุ่มแบบลอย */
+  /* ปุ่มและกล้องอยู่มุมขวาล่าง */
   .sidebar {
     position: absolute;
     bottom: 10px;
@@ -32,7 +31,7 @@
     flex-direction: column;
     align-items: center;
     gap: 6px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(6px);
     border-radius: 12px;
     padding: 10px;
@@ -73,13 +72,15 @@
     transform: scale(1.03);
   }
 
-  /* กระทง */
+  /* กระทงแบบ responsive */
   .krathong {
     position: absolute;
-    width: 180px;
-    height: 140px;
+    width: 20vw;
+    max-width: 200px;
+    height: auto;
     pointer-events: none;
     animation: floatY 5s ease-in-out infinite;
+    transform-origin: center bottom;
   }
 
   @keyframes floatY {
@@ -90,10 +91,10 @@
 
   .face {
     position: absolute;
-    right: -35px;
-    top: 30px;
-    width: 80px;
-    height: 80px;
+    right: -20%;
+    top: 15%;
+    width: 40%;
+    aspect-ratio: 1/1;
     border-radius: 50%;
     overflow: hidden;
     border: 3px solid #fff;
@@ -109,12 +110,9 @@
   }
 
   .base {
-    position: absolute;
-    bottom: 0;
-    width: 140px;
-    height: 140px;
-    left: 0;
-    z-index: 1;
+    width: 100%;
+    height: auto;
+    display: block;
   }
 
   .warning {
@@ -182,13 +180,9 @@ function createKrathong(imgSrc, baseOverride = null) {
   const k = document.createElement("div");
   k.className = "krathong";
 
-  const left = Math.random() * (stage.clientWidth - 180);
-  const top = Math.random() * (stage.clientHeight * 0.3) + stage.clientHeight * 0.6;
-  k.style.left = left + "px";
-  k.style.top = top + "px";
-
   const baseSrc = baseOverride || krathongImages[Math.floor(Math.random() * krathongImages.length)];
 
+  // สร้างส่วนใบหน้า (ถ้ามี)
   if (imgSrc) {
     const face = document.createElement("div");
     face.className = "face";
@@ -202,12 +196,23 @@ function createKrathong(imgSrc, baseOverride = null) {
   base.src = baseSrc;
   base.className = "base";
   k.appendChild(base);
+
+  // สุ่มตำแหน่งให้กระทงไม่ชนขอบ
+  const stageWidth = stage.clientWidth;
+  const stageHeight = stage.clientHeight;
+  const krathongWidth = Math.min(stageWidth * 0.2, 200); // จำกัดขนาดสูงสุด
+  const left = Math.random() * (stageWidth - krathongWidth - 30);
+  const top = Math.random() * (stageHeight * 0.3) + stageHeight * 0.6;
+  k.style.left = left + "px";
+  k.style.top = top + "px";
+
   stage.appendChild(k);
 
+  // ลอยไปข้าง ๆ
   const duration = 60000;
-  const startX = left;
-  const endX = stage.clientWidth - left - 150;
   const direction = Math.random() > 0.5 ? 1 : -1;
+  const startX = left;
+  const endX = stageWidth - left - krathongWidth - 50;
   const startTime = Date.now();
 
   function animate() {
