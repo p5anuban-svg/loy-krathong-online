@@ -50,6 +50,7 @@
     padding: 15px 10px;
     box-shadow: 3px 0 10px rgba(0,0,0,0.4);
     z-index: 10;
+    transition: opacity 0.5s ease;
   }
 
   h1 {
@@ -131,12 +132,12 @@
 </style>
 </head>
 <body>
-  <div class="sidebar">
+  <div class="sidebar" id="sidebar">
     <h1>ลอยกระทงออนไลน์</h1>
     <video id="video" autoplay playsinline></video>
     <button id="btnStart">เปิดกล้อง</button>
     <button id="btnCapture">ถ่ายภาพ</button>
-    <button id="btnLoab">ลอยกระทงแบบไม่ถ่ายรูป</button>
+    <button id="btnLoab">ลอยกระทงไม่ใช้กล้อง</button>
     <button id="btnClear">เคลียร์ทั้งหมด</button>
   </div>
 
@@ -145,6 +146,7 @@
 
 <script>
 const video = document.getElementById("video");
+const sidebar = document.getElementById("sidebar");
 const btnStart = document.getElementById("btnStart");
 const btnCapture = document.getElementById("btnCapture");
 const btnClear = document.getElementById("btnClear");
@@ -186,6 +188,22 @@ function stopCamera() {
   btnStart.textContent = "เปิดกล้อง";
 }
 
+// ฟังก์ชันซ่อนปุ่ม
+function hideSidebarButtons() {
+  sidebar.style.opacity = "0";
+  setTimeout(() => {
+    sidebar.style.display = "none";
+  }, 500);
+}
+
+// ฟังก์ชันแสดงปุ่ม (เมื่อเคลียร์)
+function showSidebarButtons() {
+  sidebar.style.display = "flex";
+  setTimeout(() => {
+    sidebar.style.opacity = "1";
+  }, 10);
+}
+
 // ถ่ายภาพ
 btnCapture.onclick = () => {
   if (!stream) return alert("กรุณาเปิดกล้องก่อน");
@@ -199,12 +217,14 @@ btnCapture.onclick = () => {
   ctx.drawImage(video, 0, 0, w, h);
   const dataUrl = canvas.toDataURL("image/jpeg");
   createKrathong(dataUrl);
+  hideSidebarButtons();
 };
 
-// โหมดลอบกระทง (ไม่ใช้กล้อง)
+// ลอยกระทง (ไม่ใช้กล้อง)
 btnLoab.onclick = () => {
   const baseSrc = krathongImages[Math.floor(Math.random() * krathongImages.length)];
   createKrathong(null, baseSrc);
+  hideSidebarButtons();
 };
 
 // ฟังก์ชันสร้างกระทง
@@ -246,8 +266,11 @@ function createKrathong(imgSrc, baseOverride = null) {
   animate();
 }
 
-btnClear.onclick = () => stage.innerHTML = "";
+// เคลียร์กระทงและคืนปุ่ม
+btnClear.onclick = () => {
+  stage.innerHTML = "";
+  showSidebarButtons();
+};
 </script>
 </body>
 </html>
-
