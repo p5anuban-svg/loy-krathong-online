@@ -20,23 +20,37 @@
     height: 100vh;
   }
 
+  /* 📱 ปรับสำหรับมือถือ */
   @media (max-width: 768px) {
     body {
       flex-direction: column;
     }
+
     .sidebar {
       width: 100%;
       flex-direction: row;
-      justify-content: space-around;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
       padding: 10px;
       height: auto;
     }
+
     .sidebar h1 {
-      display: none;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 5px;
     }
+
     video {
-      width: 120px;
-      height: 90px;
+      width: 140px;
+      height: 100px;
+    }
+
+    button {
+      width: 46%;
+      font-size: 0.85rem;
+      padding: 6px 4px;
     }
   }
 
@@ -50,7 +64,6 @@
     padding: 15px 10px;
     box-shadow: 3px 0 10px rgba(0,0,0,0.4);
     z-index: 10;
-    transition: opacity 0.5s ease;
   }
 
   h1 {
@@ -81,6 +94,7 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     transition: transform 0.1s ease;
   }
+
   button:hover {
     background: linear-gradient(180deg, #fff1a0, #ffd36e);
     transform: scale(1.03);
@@ -166,7 +180,6 @@
 
 <script>
 const video = document.getElementById("video");
-const sidebar = document.getElementById("sidebar");
 const btnStart = document.getElementById("btnStart");
 const btnCapture = document.getElementById("btnCapture");
 const btnClear = document.getElementById("btnClear");
@@ -191,15 +204,20 @@ if (location.protocol !== "https:") {
 // เปิด/ปิดกล้อง
 btnStart.onclick = async () => {
   if (stream) { stopCamera(); return; }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert("อุปกรณ์นี้ไม่รองรับการเปิดกล้องผ่านเบราว์เซอร์");
+    return;
+  }
   try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user' },
-      audio: false
-    });
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
     video.srcObject = stream;
     btnStart.textContent = "ปิดกล้อง";
   } catch (e) {
-    alert("ไม่สามารถเปิดกล้องได้ — ตรวจสอบสิทธิ์หรือเปิดผ่าน HTTPS");
+    if (location.protocol !== "https:") {
+      alert("⚠️ กรุณาเปิดผ่าน HTTPS หรือ Live Server");
+    } else {
+      alert("ไม่สามารถเปิดกล้องได้ กรุณาเช็กสิทธิ์ในเบราว์เซอร์");
+    }
     console.error(e);
   }
 };
@@ -207,20 +225,10 @@ btnStart.onclick = async () => {
 function stopCamera() {
   if (stream) {
     stream.getTracks().forEach(t => t.stop());
-    video.srcObject = null;
     stream = null;
+    video.srcObject = null;
   }
   btnStart.textContent = "เปิดกล้อง";
-}
-
-// ซ่อน/แสดงปุ่ม
-function hideSidebarButtons() {
-  sidebar.style.opacity = "0";
-  setTimeout(() => sidebar.style.display = "none", 500);
-}
-function showSidebarButtons() {
-  sidebar.style.display = "flex";
-  setTimeout(() => sidebar.style.opacity = "1", 10);
 }
 
 // ฟังก์ชันสร้างกระทง
@@ -251,7 +259,6 @@ function createKrathong(imgSrc, baseOverride = null) {
 
   stage.appendChild(k);
 
-  // animation
   const duration = 60000;
   const startX = left;
   const endX = stage.clientWidth - left - 200;
@@ -286,21 +293,16 @@ btnCapture.onclick = () => {
   ctx.drawImage(video, 0, 0, w, h);
   const dataUrl = canvas.toDataURL("image/jpeg");
   createKrathong(dataUrl);
-  hideSidebarButtons();
 };
 
 // ลอยกระทงแบบไม่ใช้กล้อง
 btnLoab.onclick = () => {
   const baseSrc = krathongImages[Math.floor(Math.random() * krathongImages.length)];
   createKrathong(null, baseSrc);
-  hideSidebarButtons();
 };
 
 // เคลียร์ทั้งหมด
-btnClear.onclick = () => {
-  stage.innerHTML = "";
-  showSidebarButtons();
-};
+btnClear.onclick = () => stage.innerHTML = "";
 </script>
 </body>
 </html>
