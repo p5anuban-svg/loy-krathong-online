@@ -14,6 +14,7 @@
     color: #fff;
   }
 
+  /* ฉากน้ำ */
   .stage {
     position: relative;
     width: 100%;
@@ -22,10 +23,10 @@
     overflow: hidden;
   }
 
-  /* ปุ่มและกล้องอยู่มุมขวาล่าง */
+  /* ✅ แถบปุ่มย้ายไปมุมขวาบน */
   .sidebar {
     position: absolute;
-    bottom: 10px;
+    top: 10px;
     right: 10px;
     display: flex;
     flex-direction: column;
@@ -72,7 +73,7 @@
     transform: scale(1.03);
   }
 
-  /* กระทงแบบ responsive */
+  /* กระทง responsive */
   .krathong {
     position: absolute;
     width: 20vw;
@@ -125,6 +126,25 @@
     border-radius: 6px;
     font-size: 0.8rem;
     display: none;
+  }
+
+  /* 📱 มือถือ: ปรับ sidebar ใหญ่ขึ้นนิด */
+  @media (max-width: 768px) {
+    .sidebar {
+      top: 5px;
+      right: 5px;
+      padding: 8px;
+      gap: 4px;
+    }
+    video {
+      width: 100px;
+      height: 75px;
+    }
+    button {
+      width: 110px;
+      font-size: 0.75rem;
+      padding: 5px;
+    }
   }
 </style>
 </head>
@@ -182,7 +202,6 @@ function createKrathong(imgSrc, baseOverride = null) {
 
   const baseSrc = baseOverride || krathongImages[Math.floor(Math.random() * krathongImages.length)];
 
-  // สร้างส่วนใบหน้า (ถ้ามี)
   if (imgSrc) {
     const face = document.createElement("div");
     face.className = "face";
@@ -197,10 +216,9 @@ function createKrathong(imgSrc, baseOverride = null) {
   base.className = "base";
   k.appendChild(base);
 
-  // สุ่มตำแหน่งให้กระทงไม่ชนขอบ
   const stageWidth = stage.clientWidth;
   const stageHeight = stage.clientHeight;
-  const krathongWidth = Math.min(stageWidth * 0.2, 200); // จำกัดขนาดสูงสุด
+  const krathongWidth = Math.min(stageWidth * 0.2, 200);
   const left = Math.random() * (stageWidth - krathongWidth - 30);
   const top = Math.random() * (stageHeight * 0.3) + stageHeight * 0.6;
   k.style.left = left + "px";
@@ -208,7 +226,6 @@ function createKrathong(imgSrc, baseOverride = null) {
 
   stage.appendChild(k);
 
-  // ลอยไปข้าง ๆ
   const duration = 60000;
   const direction = Math.random() > 0.5 ? 1 : -1;
   const startX = left;
